@@ -27,8 +27,10 @@ public class MovieController {
             movies = movieRepository.findAllByOrderByDateDesc();
         } else if (sort != null && sort.equals("createdAt")) {
             movies = movieRepository.findAllByOrderByCreatedAtDesc();
+        } else if (sort != null && sort.equals("rating")) {
+            movies = movieRepository.findAllByOrderByRatingDesc();
         } else {
-            movies = movieRepository.findAll();
+            movies = movieRepository.findAllByOrderByDateDesc();
         }
         model.addAttribute("movies", movies);
         return "movies/movies";

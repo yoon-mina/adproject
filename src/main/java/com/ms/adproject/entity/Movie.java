@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.sql.Date; // 변경된 부분: java.sql.Date -> java.util.Date
+import java.sql.Date;
 import java.util.List;
 
 @Entity
