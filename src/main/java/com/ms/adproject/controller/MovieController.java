@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -20,11 +21,19 @@ public class MovieController {
     }
 
     @GetMapping("/movies")
-    public String getMovies(Model model) {
-        List<Movie> movies = movieRepository.findAll();
+    public String getMovies(Model model, @RequestParam(name = "sort", required = false) String sort) {
+        List<Movie> movies;
+        if (sort != null && sort.equals("date")) {
+            movies = movieRepository.findAllByOrderByDateDesc();
+        } else if (sort != null && sort.equals("createdAt")) {
+            movies = movieRepository.findAllByOrderByCreatedAtDesc();
+        } else {
+            movies = movieRepository.findAll();
+        }
         model.addAttribute("movies", movies);
         return "movies/movies";
     }
+
 
     @GetMapping("/movies/new")
     public String showMovieForm(Model model) {
@@ -38,4 +47,6 @@ public class MovieController {
         movieRepository.save(movie);
         return "redirect:/movies";
     }
+
+
 }
