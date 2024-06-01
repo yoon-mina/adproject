@@ -19,7 +19,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Movie> movies = movieRepository.findAllByOrderByDateDesc(); // 날짜 역순으로 정렬된 영화 리스트를 가져옴
+        List<Movie> movies = movieRepository.findAllByOrderByDateDesc();
         model.addAttribute("movies", movies);
         return "movies/home";
     }

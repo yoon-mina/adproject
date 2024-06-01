@@ -4,6 +4,45 @@
     <meta charset="UTF-8">
     <title>Movies</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .table th, .table td {
+            border: none;
+            padding: 0.75rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .high-rating {
+            color: #008633;
+        }
+
+        .low-rating {
+            color: #dc2545;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -27,20 +66,20 @@
     </div>
 
     <div>
-        <table class="table table-bordered table-striped">
+        <table class="table">
             <thead class="thead-dark">
             <tr>
-                <th>영화 제목</th>
-                <th>평점</th>
-                <th>개봉 일자</th>
-                <th>영화 감독</th>
-                <th>등록 일자</th>
+                <th style="width: 20%;">영화 제목</th>
+                <th style="width: 10%;">평점</th>
+                <th style="width: 15%;">개봉 일자</th>
+                <th style="width: 20%;">영화 감독</th>
+                <th style="width: 20%;">등록 일자</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="movie : ${movies}">
-                <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}"></a></td>
-                <td th:text="${movie.rating}"></td>
+            <tr th:each="movie, row : ${movies}">
+                <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a></td>
+                <td th:text="${movie.rating}" th:class="${movie.rating >= 5} ? 'high-rating' : 'low-rating'"></td>
                 <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
                 <td th:text="${movie.director}"></td>
                 <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
