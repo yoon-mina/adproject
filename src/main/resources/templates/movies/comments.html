@@ -20,7 +20,7 @@
     <div class="mb-5">
         <form th:action="@{/movies/{movieId}/comments(movieId=${movie.id})}" method="post">
             <div class="form-group">
-                <label>평   점 (1점 ~ 10점)</label>
+                <label>평점 (1점 ~ 10점)</label>
                 <input type="number" name="score" class="form-control" min="0" max="10" required/>
             </div>
             <div class="form-group">
@@ -36,9 +36,9 @@
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
             <tr>
-                <th>후   기</th>
-                <th>평   점</th>
-                <th>등록일자</th>
+                <th style="width: 75%;">후기</th>
+                <th style="width: 7%;">평점</th>
+                <th style="width: 18%;">등록 일자</th>
             </tr>
             </thead>
             <tbody>
@@ -49,6 +49,7 @@
             </tr>
             </tbody>
         </table>
+
     </div>
 </div>
 </body>
