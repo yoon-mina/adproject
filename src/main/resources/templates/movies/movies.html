@@ -3,36 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>Movies</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h1>MOVIE</h1>
+<div class="container">
+    <h1 class="mt-5">MOVIE</h1>
 
-<div>
-    <a th:href="@{/movies/new}">영화 추가하기</a>
+    <div class="my-3">
+        <a class="btn btn-primary" th:href="@{/movies/new}">영화 추가하기</a>
+    </div>
+
+    <div>
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>영화 제목</th>
+                <th>평   점</th>
+                <th>개봉 일자</th>
+                <th>영화 감독</th>
+                <th>등록 일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="movie : ${movies}">
+                <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}"></a></td>
+                <td th:text="${movie.rating}"></td>
+                <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
+                <td th:text="${movie.director}"></td>
+                <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<div>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>영화 제목</th>
-            <th>평   점</th>
-            <th>개봉 일자</th>
-            <th>영화 감독</th>
-            <th>등록 일자</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="movie : ${movies}">
-            <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}"></a></td>
-            <td th:text="${movie.rating}"></td>
-            <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
-            <td th:text="${movie.director}"></td>
-            <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
 </body>
 </html>

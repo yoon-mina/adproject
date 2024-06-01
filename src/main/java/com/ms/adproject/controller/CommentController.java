@@ -28,6 +28,8 @@ public class CommentController {
     public String getComments(@PathVariable Long movieId, Model model) {
         List<Comment> comments = commentRepository.findByMovieId(movieId);
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + movieId));
+        movie.updateRating();
+        movieRepository.save(movie);
         model.addAttribute("comments", comments);
         model.addAttribute("movie", movie);
         return "movies/comments";
@@ -39,6 +41,8 @@ public class CommentController {
         comment.setMovie(movie);
         comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         commentRepository.save(comment);
+        movie.updateRating();
+        movieRepository.save(movie);
         return "redirect:/movies/" + movieId + "/comments";
     }
 }

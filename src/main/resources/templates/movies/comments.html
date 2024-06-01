@@ -3,42 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${movie.title}">Movie Comments</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h1 th:text="${movie.title}">COMMENT</h1>
+<div class="container">
+    <h1 class="mt-5" th:text="${movie.title}">COMMENT</h1>
 
-<div>
-    <a th:href="@{/movies}">BACK</a>
+    <div class="my-3">
+        <a class="btn btn-secondary" th:href="@{/movies}">BACK</a>
+    </div>
+
+    <div class="mb-5">
+        <h2>Add Comment</h2>
+        <form th:action="@{/movies/{movieId}/comments(movieId=${movie.id})}" method="post">
+            <div class="form-group">
+                <label>Content:</label>
+                <input type="text" name="content" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Score:</label>
+                <input type="number" name="score" class="form-control" min="0" max="10" required/>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Comment</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>COMMENTS</h2>
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>후   기</th>
+                <th>평   점</th>
+                <th>등록일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="comment : ${comments}">
+                <td th:text="${comment.content}"></td>
+                <td th:text="${comment.score}"></td>
+                <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<div>
-    <h2>Add Comment</h2>
-    <form th:action="@{/movies/{movieId}/comments(movieId=${movie.id})}" method="post">
-        <label>Content: <input type="text" name="content" required/></label><br/>
-        <label>Score: <input type="number" name="score" min="0" max="10" required/></label><br/>
-        <input type="submit" value="Add Comment"/>
-    </form>
-</div>
-
-<div>
-    <h2>COMMENTS</h2>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>후   기</th>
-            <th>평   점</th>
-            <th>등록일자</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="comment : ${comments}">
-            <td th:text="${comment.content}"></td>
-            <td th:text="${comment.score}"></td>
-            <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
 </body>
 </html>

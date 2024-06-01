@@ -4,11 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,8 +23,31 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private Integer rating;
     private Date date;
     private String director;
     private Timestamp createdAt;
+
+    @OneToMany(mappedBy = "movie")
+    private List<Comment> comments;
+    private double rating;
+
+    public void updateRating() {
+        if (comments == null || comments.isEmpty()) {
+            this.rating = 0;
+        } else {
+            double totalScore = 0;
+            for (Comment comment : comments) {
+                totalScore += comment.getScore();
+            }
+            this.rating = totalScore / comments.size();
+        }
+    }
+
+    public Double getRating() {
+        if (rating == 0) {
+            return null;
+        }
+        DecimalFormat df = new DecimalFormat("#.##");
+        return Double.valueOf(df.format(rating));
+    }
 }
