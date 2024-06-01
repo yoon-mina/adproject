@@ -2,10 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Movie</title>
+    <title>Movies</title>
 </head>
 <body>
-<h1>Movies</h1>
+<h1>MOVIE</h1>
 
 <div>
     <a th:href="@{/movies/new}">영화 추가하기</a>
@@ -24,7 +24,7 @@
         </thead>
         <tbody>
         <tr th:each="movie : ${movies}">
-            <td th:text="${movie.title}"></td>
+            <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}"></a></td>
             <td th:text="${movie.rating}"></td>
             <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
             <td th:text="${movie.director}"></td>

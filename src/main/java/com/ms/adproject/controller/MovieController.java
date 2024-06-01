@@ -34,8 +34,8 @@ public class MovieController {
 
     @PostMapping("/movies/new")
     public String addNewMovie(@ModelAttribute Movie movie) {
-        movie.setCreatedAt(new Timestamp(System.currentTimeMillis())); // 현재 시간을 설정
-        movieRepository.save(movie); // 영화 저장
-        return "redirect:/movies"; // 영화 목록 페이지로 리다이렉트
+        movie.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        movieRepository.save(movie);
+        return "redirect:/movies";
     }
 }
