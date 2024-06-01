@@ -2,7 +2,9 @@ package com.ms.adproject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 @SpringBootApplication
 public class AdprojectApplication {
 
@@ -10,4 +12,7 @@ public class AdprojectApplication {
         SpringApplication.run(AdprojectApplication.class, args);
     }
 
+    public String hello() {
+        return "hello";
+    }
 }
