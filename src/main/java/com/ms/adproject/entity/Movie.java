@@ -9,9 +9,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
+import java.sql.Date; // 변경된 부분: java.sql.Date -> java.util.Date
 import java.util.List;
 
 @Entity
@@ -47,7 +46,6 @@ public class Movie {
         if (rating == 0) {
             return null;
         }
-        DecimalFormat df = new DecimalFormat("#.##");
-        return Double.valueOf(df.format(rating));
+        return Double.valueOf(String.format("%.2f", rating));
     }
 }
