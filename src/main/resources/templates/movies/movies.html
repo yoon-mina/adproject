@@ -2,24 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Movies List</title>
+    <title>Movie</title>
 </head>
 <body>
-<h1>Movies List</h1>
+<h1>Movies</h1>
 
 <div>
-    <a th:href="@{/movies/new}">Add New Movie</a>
+    <a th:href="@{/movies/new}">영화 추가하기</a>
 </div>
 
 <div>
     <table border="1">
         <thead>
         <tr>
-            <th>Title</th>
-            <th>Rating</th>
-            <th>Date</th>
-            <th>Director</th>
-            <th>Created At</th>
+            <th>영화 제목</th>
+            <th>평   점</th>
+            <th>개봉 일자</th>
+            <th>영화 감독</th>
+            <th>등록 일자</th>
         </tr>
         </thead>
         <tbody>
