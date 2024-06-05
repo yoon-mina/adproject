@@ -3,6 +3,9 @@ import com.ms.adproject.entity.Movie;
 import com.ms.adproject.entity.User;
 import com.ms.adproject.repository.MovieRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,10 @@ public class MovieController {
         this.movieRepository = movieRepository;
     }
 
+    public Page<Movie> getList(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return this.movieRepository.findAll(pageable);
+    }
     @GetMapping("/movies")
     public String getMovies(Model model, @RequestParam(name = "sort", required = false) String sort) {
         List<Movie> movies;
@@ -45,9 +52,6 @@ public class MovieController {
     @PostMapping("/movies/new")
     public String addNewMovie(@ModelAttribute Movie movie, HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return "redirect:/login";
-        }
         if (movieRepository.existsByTitle(movie.getTitle())) {
             model.addAttribute("error", "이미 등록된 영화입니다.");
             return "movies/new_movie";

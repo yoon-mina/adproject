@@ -4,23 +4,19 @@
     <meta charset="UTF-8">
     <title th:text="${movie.title + ' - Movie Comments'}">Movie Comments</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<!--    <link rel="stylesheet" href="static/comment_styles.css">-->
+    <!-- JavaScript -->
+    <script type="text/javascript" th:if="${session['loggedInUser'] == null}">
+        window.addEventListener('DOMContentLoaded', (event) => {
+            if (confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                location.href = "/login";
+            } else {
+                location.href = "/movies";
+            }
+        });
+    </script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}">HOME</a>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/register}">회원가입</a>
-        </li>
-        <li class="nav-item" th:if="${session['loggedInUser'] == null}">
-            <a class="nav-link" th:href="@{/login}">로그인</a>
-        </li>
-        <li class="nav-item" th:if="${session['loggedInUser'] != null}">
-            <a class="nav-link" th:href="@{/logout}">로그아웃</a>
-        </li>
-    </ul>
-</nav>
+<div th:replace="nav :: nav"></div>
 <div class="container">
     <h1 class="mt-5" th:text="${movie.title}"></h1>
     <div class="my-3">
@@ -28,7 +24,6 @@
             <a class="btn btn-secondary" th:href="@{/movies}">BACK</a>
         </div>
     </div>
-
     <div class="mb-5">
         <form th:action="@{'/movies/' + ${movie.id} + '/comments'}" method="post">
             <div class="form-group">
@@ -42,7 +37,6 @@
             <button type="submit" class="btn btn-primary">후기 등록</button>
         </form>
     </div>
-
     <div>
         <h2>COMMENTS</h2>
         <div class="my-3">
