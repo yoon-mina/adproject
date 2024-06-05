@@ -20,10 +20,17 @@
         .table-container {
             overflow-x: auto;
         }
+        .tag {
+            background-color: #007bff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
 <div th:replace="nav :: nav"></div>
+<div style="height: 20px"></div>
 <div class="container">
     <div class="search-container d-flex justify-content-between">
         <form th:action="@{/movies}" method="get">
@@ -55,7 +62,7 @@
         <table class="table">
             <thead class="thead-dark">
             <tr>
-                <th style="width: 24%;">영화 제목</th>
+                <th style="width: 30%;">영화 제목</th>
                 <th style="width: 13%;">영화 감독</th>
                 <th style="width: 5%;">평점</th>
                 <th style="width: 18%;">개봉 일자</th>
@@ -66,7 +73,13 @@
             </thead>
             <tbody>
             <tr th:each="movie, row : ${movies}">
-                <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a></td>
+                <td>
+                    <a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a>
+                    <span th:each="genre : ${#strings.arraySplit(movie.genre, ',')}"
+                          class="tag"
+                          th:style="'min-width:' + (${#strings.length(genre.trim())} * 10) + '%'"
+                          th:text="'#' + ${genre.trim()}"></span>
+                </td>
                 <td th:text="${movie.director}"></td>
                 <td th:text="${movie.rating}"></td>
                 <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>

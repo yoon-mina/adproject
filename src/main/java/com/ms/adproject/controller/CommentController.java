@@ -37,6 +37,7 @@ public class CommentController {
         if (!comments.isEmpty()) {
             avgScore = totalScore / comments.size();
         }
+        avgScore = Double.parseDouble(String.format("%.1f", avgScore));
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + movieId));
         movie.setRating(avgScore);

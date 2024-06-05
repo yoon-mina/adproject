@@ -24,6 +24,7 @@ public class Movie {
     @Column(unique = true)
     private String title;
 
+    private String genre;
     private Date date;
     private String director;
     private Timestamp createdAt;
