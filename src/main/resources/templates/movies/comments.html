@@ -30,7 +30,7 @@
     </div>
 
     <div class="mb-5">
-        <form th:action="@{/movies/{movieId}/comments(movieId=${movie.id})}" method="post">
+        <form th:action="@{'/movies/' + ${movie.id} + '/comments'}" method="post">
             <div class="form-group">
                 <label>평점 (1점 ~ 10점)</label>
                 <input type="number" name="score" class="form-control" min="0" max="10" required/>
@@ -73,7 +73,7 @@
                 <td th:text="${comment.userid}"></td>
                 <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td>
-                    <form th:action="@{'/movies/' + ${movieId} + '/comments/delete(commentId=' + ${comment.id} + ')'}" method="post" th:if="${comment.userid == session.loggedInUser?.userid}" style="display:inline;">
+                    <form th:action="@{'/movies/' + ${movie.id} + '/comments/delete?commentId=' + ${comment.id}}" method="post" th:if="${comment.userid == session.loggedInUser?.userid}" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">삭제</button>
                     </form>
                 </td>

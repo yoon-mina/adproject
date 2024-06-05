@@ -73,5 +73,4 @@ public class CommentController {
         return "redirect:/movies/" + movieId + "/comments";
     }
 
-
 }
