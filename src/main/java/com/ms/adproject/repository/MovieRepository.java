@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findAllByOrderByDateDesc();
-    List<Movie> findAllByOrderByCreatedAtDesc();
+    List<Movie> findAllByOrderByCreatedAtAsc();
     List<Movie> findAllByOrderByRatingDesc();
 
+
+    boolean existsByTitle(String title);
 }

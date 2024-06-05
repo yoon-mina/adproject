@@ -34,7 +34,7 @@ public class CommentController {
         if (sort != null && sort.equals("score")) {
             comments = commentRepository.findByMovieIdOrderByScoreDesc(movieId);
         } else {
-            comments = commentRepository.findByMovieIdOrderByCreatedAtDesc(movieId);
+            comments = commentRepository.findByMovieIdOrderByCreatedAtAsc(movieId);
         }
         model.addAttribute("comments", comments);
         model.addAttribute("movie", movie);
@@ -67,6 +67,11 @@ public class CommentController {
         return "redirect:/movies/" + movieId + "/comments";
     }
 
+    @PostMapping("/movies/{movieId}/comments/delete")
+    public String deleteComment(@RequestParam(name = "commentId") Long commentId, @PathVariable Long movieId) {
+        commentRepository.deleteById(commentId);
+        return "redirect:/movies/" + movieId + "/comments";
+    }
 
 
 }

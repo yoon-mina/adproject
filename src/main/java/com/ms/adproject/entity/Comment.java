@@ -17,10 +17,11 @@ public class Comment {
 
     @Column(name = "Userid", nullable = false)
     private String userid;
-
+    
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
+
     private String content;
     private Integer score;
     private Timestamp createdAt;

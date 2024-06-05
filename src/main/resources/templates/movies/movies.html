@@ -25,6 +25,7 @@
     <div class="my-3">
         <div class="btn-group" role="group" aria-label="Sort Options">
             <a class="btn btn-primary" th:href="@{/movies/new}">영화 등록하기</a>
+            <p th:if="${error}" th:text="${error}" style="color: red;"></p>
             <div class="btn-group" role="group">
                 <button id="sortDropdown" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     정렬
@@ -42,20 +43,28 @@
         <table class="table">
             <thead class="thead-dark">
             <tr>
-                <th style="width: 20%;">영화 제목</th>
-                <th style="width: 10%;">평점</th>
-                <th style="width: 15%;">개봉 일자</th>
-                <th style="width: 20%;">영화 감독</th>
+                <th style="width: 24%;">영화 제목</th>
+                <th style="width: 13%;">영화 감독</th>
+                <th style="width: 5%;">평점</th>
+                <th style="width: 18%;">개봉 일자</th>
+                <th style="width: 13%;">작성자</th>
                 <th style="width: 20%;">등록 일자</th>
+                <th style="width: 7%;"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="movie, row : ${movies}">
                 <td><a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a></td>
+                <td th:text="${movie.director}"></td>
                 <td th:text="${movie.rating}"></td>
                 <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
-                <td th:text="${movie.director}"></td>
+                <td th:text="${movie.userid}"></td>
                 <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td>
+                    <form th:action="@{/movies/{movieId}/delete(movieId=${movie.id})}" method="post" th:if="${movie.userid == session.loggedInUser?.userid}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
