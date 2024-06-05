@@ -23,8 +23,30 @@
         .tag {
             background-color: #007bff;
             color: white;
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
+            margin-right: 5px;
+            cursor: pointer;
+            overflow: hidden; /* 내용이 넘칠 경우 숨김 */
+            white-space: nowrap; /* 줄바꿈 방지 */
+
+        }
+        .tag:hover {
+            background-color: #0056b3;
+        }
+        .genre-badge {
+            cursor: pointer;
+            color: white;
+            padding: 12px 16px;
+        }
+        .genre-badge:hover { background-color: #007bff; color: white; }
+        .genre-filter .active {
+            background-color: #007bff;
+            color: white;
+        }
+        .genre-badge.active {
+            background-color: #007bff;
+            color: white;
         }
     </style>
 </head>
@@ -58,17 +80,42 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <label>장르</label>
+        <div id="genreList" class="d-flex flex-wrap">
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="">모두</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="액션">액션</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="코미디">코미디</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="드라마">드라마</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="SF">SF</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="로맨스">로맨스</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="청춘">청춘</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="고어">고어</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="스릴러">스릴러</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="공포">공포</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="애니메이션">애니메이션</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="범죄">범죄</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="판타지">판타지</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="가족">가족</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="모험">모험</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="전쟁">전쟁</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="음악">음악</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="다큐멘터리">다큐멘터리</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="기타">기타</div>
+        </div>
+    </div>
+
     <div class="table-container">
         <table class="table">
             <thead class="thead-dark">
             <tr>
-                <th style="width: 30%;">영화 제목</th>
-                <th style="width: 13%;">영화 감독</th>
+                <th style="width: 40%;">영화 제목</th>
+                <th style="width: 10%;">감독</th>
                 <th style="width: 5%;">평점</th>
-                <th style="width: 18%;">개봉 일자</th>
-                <th style="width: 13%;">작성자</th>
+                <th style="width: 15%;">개봉 일자</th>
+                <th style="width: 10%;">작성자</th>
                 <th style="width: 20%;">등록 일자</th>
-                <th style="width: 7%;"></th>
+                <th style="width: 1%"></th>
             </tr>
             </thead>
             <tbody>
@@ -78,7 +125,8 @@
                     <span th:each="genre : ${#strings.arraySplit(movie.genre, ',')}"
                           class="tag"
                           th:style="'min-width:' + (${#strings.length(genre.trim())} * 10) + '%'"
-                          th:text="'#' + ${genre.trim()}"></span>
+                          th:text="'#' + ${genre.trim()}">
+          </span>
                 </td>
                 <td th:text="${movie.director}"></td>
                 <td th:text="${movie.rating}"></td>
@@ -86,8 +134,11 @@
                 <td th:text="${movie.userid}"></td>
                 <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td>
-                    <form th:action="@{/movies/{movieId}/delete(movieId=${movie.id})}" method="post" th:if="${movie.userid == session.loggedInUser?.userid}" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    <form th:action="@{/movies/{movieId}/delete(movieId=${movie.id})}"
+                          method="post"
+                          th:if="${movie.userid == session.loggedInUser?.userid}"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">X</button>
                     </form>
                 </td>
             </tr>
@@ -96,10 +147,55 @@
     </div>
 </div>
 
-<!-- Bootstrap 및 Popper.js 로드 -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap 및 Popper.js 로드 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <script>
+        $(document).ready(function() {
+            // 장르 필터링 기능
+            $('.genre-badge').click(function() {
+                var genre = $(this).data('genre');
+                // 선택한 장르가 이미 active 클래스를 가지고 있는지 확인
+                var isActive = $(this).hasClass('active');
+                if (!isActive) {
+                    $(this).addClass('active'); // 클릭한 장르에 active 클래스 추가
+                } else {
+                    $(this).removeClass('active'); // 클릭한 장르에서 active 클래스 제거
+                }
+                filterMoviesByGenre();
+            });
+
+            // 장르별 영화 필터링 함수
+            function filterMoviesByGenre() {
+                var selectedGenres = $('.genre-badge.active').map(function() {
+                    return $(this).data('genre');
+                }).get();
+
+                if (selectedGenres.length === 0) {
+                    // 선택한 장르가 없는 경우 모든 영화를 표시
+                    $('.tag').parent().parent().show();
+                    $('#noMoviesMessage').hide();
+                } else {
+                    $('.tag').parent().parent().hide(); // 모든 영화를 숨김
+
+                    // 선택한 장르에 해당하는 영화만 표시
+                    selectedGenres.forEach(function(genre) {
+                        var $movies = $('.tag:contains(' + genre + ')').parent().parent();
+                        $movies.show();
+                    });
+
+                    // 선택한 장르에 해당하는 영화가 없는 경우
+                    if ($('.table-container tbody tr:visible').length === 0) {
+                        $('#noMoviesMessage').show();
+                    } else {
+                        $('#noMoviesMessage').hide();
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
+

@@ -56,18 +56,24 @@ public class MovieController {
     }
 
     @PostMapping("/movies/new")
-    public String addNewMovie(@ModelAttribute Movie movie, HttpSession session, Model model) {
+    public String addNewMovie(@ModelAttribute Movie movie, @RequestParam(name = "selectedGenres") String selectedGenres, HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (movieRepository.existsByTitle(movie.getTitle())) {
             model.addAttribute("error", "이미 등록된 영화입니다.");
             return "movies/new_movie";
         }
+
         movie.setUserid(loggedInUser.getUserid());
         movie.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         movie.setRating(0);
+
+        // 사용자가 선택한 장르들을 movie 객체에 설정합니다.
+        movie.setGenre(selectedGenres);
+
         movieRepository.save(movie);
         return "redirect:/movies";
     }
+
 
     @PostMapping("/movies/{movieId}/delete")
     public String deleteMovie(@PathVariable Long movieId, HttpSession session) {
