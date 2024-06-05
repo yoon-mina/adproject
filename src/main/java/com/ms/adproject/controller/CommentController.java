@@ -27,6 +27,23 @@ public class CommentController {
         this.movieRepository = movieRepository;
     }
 
+    private void updateMovieRating(Long movieId) {
+        List<Comment> comments = commentRepository.findByMovieId(movieId);
+        double totalScore = 0;
+        for (Comment c : comments) {
+            totalScore += c.getScore();
+        }
+        double avgScore = 0;
+        if (!comments.isEmpty()) {
+            avgScore = totalScore / comments.size();
+        }
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + movieId));
+        movie.setRating(avgScore);
+        movieRepository.save(movie);
+    }
+
+
     @GetMapping("/movies/{movieId}/comments")
     public String getComments(@PathVariable Long movieId, Model model, @RequestParam(name = "sort", required = false) String sort) {
         List<Comment> comments;
@@ -55,13 +72,7 @@ public class CommentController {
         comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         commentRepository.save(comment);
 
-        List<Comment> comments = commentRepository.findByMovieId(movieId);
-        double totalScore = 0;
-        for (Comment c : comments) {
-            totalScore += c.getScore();
-        }
-        double avgScore = totalScore / comments.size();
-        movie.setRating(avgScore);
+        updateMovieRating(movieId);
         movieRepository.save(movie);
 
         return "redirect:/movies/" + movieId + "/comments";
@@ -70,7 +81,7 @@ public class CommentController {
     @PostMapping("/movies/{movieId}/comments/delete")
     public String deleteComment(@RequestParam(name = "commentId") Long commentId, @PathVariable Long movieId) {
         commentRepository.deleteById(commentId);
+        updateMovieRating(movieId);
         return "redirect:/movies/" + movieId + "/comments";
     }
-
 }
