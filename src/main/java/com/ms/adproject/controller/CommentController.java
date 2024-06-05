@@ -88,16 +88,29 @@ public class CommentController {
     }
 
     @PostMapping("/movies/{movieId}/comments/{commentId}/like")
-    public ResponseEntity<String> likeComment(@PathVariable Long movieId, @PathVariable Long commentId) {
+    public ResponseEntity<String> likeComment(@PathVariable Long movieId, @PathVariable Long commentId, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        String likedCommentAttribute = "likedComment_" + commentId;
+
+        Boolean alreadyLiked = (Boolean) session.getAttribute(likedCommentAttribute);
+        if (alreadyLiked != null && alreadyLiked) {
+            return ResponseEntity.badRequest().body("이미 추천한 댓글입니다.");
+        }
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment Id:" + commentId));
 
         if (comment.getLikes() == null) {
             comment.setLikes(0);
         }
-
         comment.setLikes(comment.getLikes() + 1);
         commentRepository.save(comment);
+
+        session.setAttribute(likedCommentAttribute, true);
         return ResponseEntity.ok("Liked");
     }
 
