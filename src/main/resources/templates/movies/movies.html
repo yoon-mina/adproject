@@ -4,27 +4,54 @@
     <meta charset="UTF-8">
     <title>Movies</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: 70%;
+        }
+        .search-container button {
+            width: 25%;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="nav :: nav"></div>
 <div class="container">
-    <div class="my-3">
-        <div class="btn-group" role="group" aria-label="Sort Options">
-            <a class="btn btn-primary" th:href="@{/movies/new}">영화 등록하기</a>
-            <div class="btn-group" role="group">
-                <button id="sortDropdown" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    정렬
-                </button>
-                <div class="dropdown-menu" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item" th:href="@{/movies(sort='date')}">최신순</a>
-                    <a class="dropdown-item" th:href="@{/movies(sort='createdAt')}">등록순</a>
-                    <a class="dropdown-item" th:href="@{/movies(sort='rating')}">평점순</a>
+    <div class="search-container d-flex justify-content-between">
+        <form th:action="@{/movies}" method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="검색어를 입력하세요" aria-label="검색어를 입력하세요" aria-describedby="button-addon2" name="search">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" style="width: 100%" id="button-addon2">검색</button>
                 </div>
+            </div>
+        </form>
+        <div class="d-flex">
+            <div class="dropdown mr-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                    정렬하기
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/movies?sort=createdAt">등록순</a>
+                    <a class="dropdown-item" href="/movies?sort=date">최신순</a>
+                    <a class="dropdown-item" href="/movies?sort=rating">평점순</a>
+                </div>
+            </div>
+            <div>
+                <a class="btn btn-primary" th:href="@{/movies/new}">영화 등록하기</a>
             </div>
         </div>
     </div>
 
-    <div>
+    <div class="table-container">
         <table class="table">
             <thead class="thead-dark">
             <tr>
@@ -54,8 +81,6 @@
             </tbody>
         </table>
     </div>
-
-
 </div>
 
 <!-- Bootstrap 및 Popper.js 로드 -->

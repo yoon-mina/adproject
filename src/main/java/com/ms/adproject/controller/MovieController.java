@@ -1,11 +1,10 @@
 package com.ms.adproject.controller;
+
 import com.ms.adproject.entity.Movie;
 import com.ms.adproject.entity.User;
 import com.ms.adproject.repository.MovieRepository;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,26 +21,33 @@ public class MovieController {
         this.movieRepository = movieRepository;
     }
 
-    public Page<Movie> getList(int page) {
-        Pageable pageable = PageRequest.of(page, 10);
-        return this.movieRepository.findAll(pageable);
-    }
     @GetMapping("/movies")
-    public String getMovies(Model model, @RequestParam(name = "sort", required = false) String sort) {
+    public String getMovies(Model model, @RequestParam(name = "sort", required = false) String sort,
+                            @RequestParam(name = "search", required = false) String search) {
         List<Movie> movies;
-        if (sort != null && sort.equals("date")) {
-            movies = movieRepository.findAllByOrderByDateDesc();
-        } else if (sort != null && sort.equals("createdAt")) {
-            movies = movieRepository.findAllByOrderByCreatedAtAsc();
-        } else if (sort != null && sort.equals("rating")) {
-            movies = movieRepository.findAllByOrderByRatingDesc();
+        if (sort != null) {
+            switch (sort) {
+                case "date":
+                    movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+                    break;
+                case "createdAt":
+                    movies = movieRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt"));
+                    break;
+                case "rating":
+                    movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "rating"));
+                    break;
+                default:
+                    movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+                    break;
+            }
+        } else if (search != null && !search.isEmpty()) {
+            movies = movieRepository.searchMoviesAndComments(search);
         } else {
-            movies = movieRepository.findAllByOrderByDateDesc();
+            movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
         }
         model.addAttribute("movies", movies);
         return "movies/movies";
     }
-
 
     @GetMapping("/movies/new")
     public String showMovieForm(Model model) {

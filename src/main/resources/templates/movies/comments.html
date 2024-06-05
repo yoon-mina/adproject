@@ -6,11 +6,12 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <!-- JavaScript -->
     <script type="text/javascript" th:if="${session['loggedInUser'] == null}">
-        window.addEventListener('DOMContentLoaded', (event) => {
-            if (confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
-                location.href = "/login";
+        window.addEventListener('DOMContentLoaded', function() {
+            var confirmLogin = confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?");
+            if (confirmLogin) {
+                location.replace("/login");
             } else {
-                location.href = "/movies";
+                location.replace("/movies");
             }
         });
     </script>
