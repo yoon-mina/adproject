@@ -1,0 +1,25 @@
+body {
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.jumbotron {
+    background-color: #ffffff;
+    color: #111111;
+    padding: 3rem 1rem;
+    margin-bottom: 3rem;
+    border-radius: 0.3rem;
+}
+
+.jumbotron a {
+    color: #ffffff;
+}
+
+.jumbotron a:hover {
+    color: #f8f9fa;
+    text-decoration: none;
+}
+
+.movie-list {
+    background-color: #ffffff;
+}
