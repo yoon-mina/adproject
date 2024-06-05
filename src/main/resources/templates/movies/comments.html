@@ -4,50 +4,30 @@
     <meta charset="UTF-8">
     <title th:text="${movie.title + ' - Movie Comments'}">Movie Comments</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .table th, .table td {
-            border: none;
-            padding: 0.75rem;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .table thead th {
-            background-color: #343a40;
-            color: #ffffff;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .high-score {
-            color: #008633;
-        }
-
-        .low-score {
-            color: #dc2545;
-        }
-    </style>
+    <link rel="stylesheet" href="src/main/resources/static/comment_styles.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}">HOME</a>
+    <a class="navbar-brand" th:href="@{/}">HOME </a>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/register}">회원가입</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/login}">로그인</a>
+        </li>
+    </ul>
 </nav>
 <div class="container">
     <h1 class="mt-5" th:text="${movie.title}"></h1>
     <div class="my-3">
         <div class="d-flex justify-content-end">
-            <a class="btn btn-secondary" th:href="@{/movies}">BACK</a>
+            <a class="btn btn-secondary" th:href="@{/new_moive/k}">BACK</a>
         </div>
     </div>
 
     <div class="mb-5">
-        <form th:action="@{/movies/{movieId}/comments(movieId=${movie.id})}" method="post">
+        <form th:action="@{/new_movie/k/{movieId}/comments(movieId=${movie.id})}" method="post">
             <div class="form-group">
                 <label>평점 (1점 ~ 10점)</label>
                 <input type="number" name="score" class="form-control" min="0" max="10" required/>
@@ -68,8 +48,8 @@
                     정렬
                 </button>
                 <div class="dropdown-menu" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='date')}">등록순</a>
-                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='score')}">별점순</a>
+                    <a class="dropdown-item" th:href="@{/templates/k/{movieId}/comments(movieId=${movie.id}, sort='date')}">등록순</a>
+                    <a class="dropdown-item" th:href="@{/templates/k/{movieId}/comments(movieId=${movie.id}, sort='score')}">별점순</a>
                 </div>
             </div>
         </div>
@@ -84,7 +64,7 @@
             <tbody>
             <tr th:each="comment : ${comments}">
                 <td th:text="${comment.content}"></td>
-                <td th:text="${comment.score}" th:class="${comment.score >= 5} ? 'high-score' : 'low-score'"></td>
+                <td th:text="${comment.score}"></td>
                 <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
             </tr>
             </tbody>
@@ -95,6 +75,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="scripts.js"></script>
 
 </body>
 </html>

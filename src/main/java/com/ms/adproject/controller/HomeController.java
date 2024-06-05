@@ -23,5 +23,4 @@ public class HomeController {
         model.addAttribute("movies", movies);
         return "movies/home";
     }
-
 }
