@@ -6,15 +6,16 @@ import com.ms.adproject.entity.User;
 import com.ms.adproject.repository.CommentRepository;
 import com.ms.adproject.repository.MovieRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class CommentController {
@@ -85,4 +86,19 @@ public class CommentController {
         updateMovieRating(movieId);
         return "redirect:/movies/" + movieId + "/comments";
     }
+
+    @PostMapping("/movies/{movieId}/comments/{commentId}/like")
+    public ResponseEntity<String> likeComment(@PathVariable Long movieId, @PathVariable Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid comment Id:" + commentId));
+
+        if (comment.getLikes() == null) {
+            comment.setLikes(0);
+        }
+
+        comment.setLikes(comment.getLikes() + 1);
+        commentRepository.save(comment);
+        return ResponseEntity.ok("Liked");
+    }
+
 }
