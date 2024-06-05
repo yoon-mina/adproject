@@ -2,8 +2,10 @@ package com.ms.adproject.controller;
 
 import com.ms.adproject.entity.Comment;
 import com.ms.adproject.entity.Movie;
+import com.ms.adproject.entity.User;
 import com.ms.adproject.repository.CommentRepository;
 import com.ms.adproject.repository.MovieRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,9 +42,16 @@ public class CommentController {
     }
 
     @PostMapping("/movies/{movieId}/comments")
-    public String addComment(@PathVariable Long movieId, Comment comment) {
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + movieId));
+    public String addComment(@PathVariable Long movieId, Comment comment, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + movieId));
         comment.setMovie(movie);
+        comment.setUserid(loggedInUser.getUserid());
         comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         commentRepository.save(comment);
 
@@ -57,6 +66,7 @@ public class CommentController {
 
         return "redirect:/movies/" + movieId + "/comments";
     }
+
 
 
 }

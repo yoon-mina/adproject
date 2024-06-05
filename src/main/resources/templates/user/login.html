@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>로그인</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" type="text/css" href="static/login_style.css">-->
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -12,8 +13,11 @@
         <li class="nav-item">
             <a class="nav-link" th:href="@{/register}">회원가입</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" th:if="${session['loggedInUser'] == null}">
             <a class="nav-link" th:href="@{/login}">로그인</a>
+        </li>
+        <li class="nav-item" th:if="${session['loggedInUser'] != null}">
+            <a class="nav-link" th:href="@{/logout}">로그아웃</a>
         </li>
     </ul>
 </nav>

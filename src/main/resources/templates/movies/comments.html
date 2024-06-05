@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <title th:text="${movie.title + ' - Movie Comments'}">Movie Comments</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="src/main/resources/static/comment_styles.css">
+<!--    <link rel="stylesheet" href="static/comment_styles.css">-->
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}">HOME </a>
+    <a class="navbar-brand" th:href="@{/}">HOME</a>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
             <a class="nav-link" th:href="@{/register}">회원가입</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" th:if="${session['loggedInUser'] == null}">
             <a class="nav-link" th:href="@{/login}">로그인</a>
+        </li>
+        <li class="nav-item" th:if="${session['loggedInUser'] != null}">
+            <a class="nav-link" th:href="@{/logout}">로그아웃</a>
         </li>
     </ul>
 </nav>
@@ -22,12 +25,12 @@
     <h1 class="mt-5" th:text="${movie.title}"></h1>
     <div class="my-3">
         <div class="d-flex justify-content-end">
-            <a class="btn btn-secondary" th:href="@{/new_moive/k}">BACK</a>
+            <a class="btn btn-secondary" th:href="@{/movies}">BACK</a>
         </div>
     </div>
 
     <div class="mb-5">
-        <form th:action="@{/new_movie/k/{movieId}/comments(movieId=${movie.id})}" method="post">
+        <form th:action="@{/movies/{movieId}/comments(movieId=${movie.id})}" method="post">
             <div class="form-group">
                 <label>평점 (1점 ~ 10점)</label>
                 <input type="number" name="score" class="form-control" min="0" max="10" required/>
@@ -48,8 +51,8 @@
                     정렬
                 </button>
                 <div class="dropdown-menu" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item" th:href="@{/templates/k/{movieId}/comments(movieId=${movie.id}, sort='date')}">등록순</a>
-                    <a class="dropdown-item" th:href="@{/templates/k/{movieId}/comments(movieId=${movie.id}, sort='score')}">별점순</a>
+                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='date')}">등록순</a>
+                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='score')}">별점순</a>
                 </div>
             </div>
         </div>
