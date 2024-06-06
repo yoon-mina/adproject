@@ -52,6 +52,8 @@ public class CommentController {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + movieId));
         if (sort != null && sort.equals("score")) {
             comments = commentRepository.findByMovieIdOrderByScoreDesc(movieId);
+        } if (sort != null && sort.equals("likes")) {
+            comments = commentRepository.findByMovieIdOrderByLikesDesc(movieId);
         } else {
             comments = commentRepository.findByMovieIdOrderByCreatedAtAsc(movieId);
         }

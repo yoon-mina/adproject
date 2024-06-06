@@ -94,6 +94,7 @@
                 <div class="dropdown-menu" aria-labelledby="sortDropdown">
                     <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='date')}">등록순</a>
                     <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='score')}">평점순</a>
+                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='likes')}">추천순</a>
                 </div>
             </div>
         </div>

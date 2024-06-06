@@ -182,11 +182,15 @@
             <tr th:each="movie, row : ${movies}">
                 <td>
                     <a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a>
+                    <span class="text-danger small ms=2"
+                          th:if="${movie.comments != null && movie.comments.size() > 0}"
+                          th:text="${movie.comments.size()}">
+                    </span>
                     <span th:each="genre : ${#strings.arraySplit(movie.genre, ',')}"
                           class="tag"
                           th:style="'min-width:' + (${#strings.length(genre.trim())} * 10) + '%'"
                           th:text="'#' + ${genre.trim()}">
-          </span>
+                    </span>
                 </td>
                 <td th:text="${movie.director}"></td>
                 <td th:text="${movie.rating}"></td>
