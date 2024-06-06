@@ -1,172 +1,26 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Movies</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        .search-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .search-container input {
-            width: 70%;
-        }
-        .search-container button {
-            width: 25%;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-        .tag {
-            background-color: #007bff;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 8px;
-            margin-right: 5px;
-            cursor: pointer;
-            overflow: hidden; /* 내용이 넘칠 경우 숨김 */
-            white-space: nowrap; /* 줄바꿈 방지 */
-
-        }
-        .tag:hover {
-            background-color: #0056b3;
-        }
-        .genre-badge {
-            cursor: pointer;
-            color: white;
-            padding: 12px 16px;
-        }
-        .genre-badge:hover { background-color: #007bff; color: white; }
-        .genre-filter .active {
-            background-color: #007bff;
-            color: white;
-        }
-        .genre-badge.active {
-            background-color: #007bff;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-<div th:replace="nav :: nav"></div>
-<div style="height: 20px"></div>
-<div class="container">
-    <div class="search-container d-flex justify-content-between">
-        <form th:action="@{/movies}" method="get">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="검색어를 입력하세요" aria-label="검색어를 입력하세요" aria-describedby="button-addon2" name="search">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit" style="width: 100%" id="button-addon2">검색</button>
-                </div>
-            </div>
-        </form>
-        <div class="d-flex">
-            <div class="dropdown mr-2">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
-                    정렬하기
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/movies?sort=createdAt">등록순</a>
-                    <a class="dropdown-item" href="/movies?sort=date">최신순</a>
-                    <a class="dropdown-item" href="/movies?sort=rating">평점순</a>
-                </div>
-            </div>
-            <div>
-                <a class="btn btn-primary" th:href="@{/movies/new}">영화 등록하기</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label>장르</label>
-        <div id="genreList" class="d-flex flex-wrap">
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="">모두</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="액션">액션</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="코미디">코미디</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="드라마">드라마</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="SF">SF</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="로맨스">로맨스</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="청춘">청춘</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="고어">고어</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="스릴러">스릴러</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="공포">공포</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="애니메이션">애니메이션</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="범죄">범죄</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="판타지">판타지</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="가족">가족</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="모험">모험</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="전쟁">전쟁</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="음악">음악</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="다큐멘터리">다큐멘터리</div>
-            <div class="badge badge-secondary m-1 genre-badge" data-genre="기타">기타</div>
-        </div>
-    </div>
-
-    <div class="table-container">
-        <table class="table">
-            <thead class="thead-dark">
-            <tr>
-                <th style="width: 40%;">영화 제목</th>
-                <th style="width: 10%;">감독</th>
-                <th style="width: 5%;">평점</th>
-                <th style="width: 15%;">개봉 일자</th>
-                <th style="width: 10%;">작성자</th>
-                <th style="width: 20%;">등록 일자</th>
-                <th style="width: 1%"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="movie, row : ${movies}">
-                <td>
-                    <a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a>
-                    <span th:each="genre : ${#strings.arraySplit(movie.genre, ',')}"
-                          class="tag"
-                          th:style="'min-width:' + (${#strings.length(genre.trim())} * 10) + '%'"
-                          th:text="'#' + ${genre.trim()}">
-          </span>
-                </td>
-                <td th:text="${movie.director}"></td>
-                <td th:text="${movie.rating}"></td>
-                <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
-                <td th:text="${movie.userid}"></td>
-                <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td>
-                    <form th:action="@{/movies/{movieId}/delete(movieId=${movie.id})}"
-                          method="post"
-                          th:if="${movie.userid == session.loggedInUser?.userid}"
-                          style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm">X</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
     <!-- Bootstrap 및 Popper.js 로드 -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <script>
         $(document).ready(function() {
             // 장르 필터링 기능
             $('.genre-badge').click(function() {
                 var genre = $(this).data('genre');
-                // 선택한 장르가 이미 active 클래스를 가지고 있는지 확인
                 var isActive = $(this).hasClass('active');
                 if (!isActive) {
-                    $(this).addClass('active'); // 클릭한 장르에 active 클래스 추가
+                    $(this).addClass('active');
                 } else {
-                    $(this).removeClass('active'); // 클릭한 장르에서 active 클래스 제거
+                    $(this).removeClass('active');
                 }
                 filterMoviesByGenre();
             });
-
             // 장르별 영화 필터링 함수
             function filterMoviesByGenre() {
                 var selectedGenres = $('.genre-badge.active').map(function() {
@@ -196,6 +50,163 @@
             }
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            // 영화 삭제 버튼 클릭 이벤트 처리
+            $('.btn-danger').click(function(event) {
+                event.preventDefault();
+                var result = confirm("정말로 삭제하시겠습니까?");
+                if (result) {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <style>
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: 70%;
+        }
+        .search-container button {
+            width: 25%;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .tag {
+            background-color: #007bff;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            margin-right: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+
+        }
+        .tag:hover {
+            background-color: #0056b3;
+        }
+        .genre-badge {
+            cursor: pointer;
+            color: white;
+            padding: 12px 16px;
+        }
+        .genre-badge:hover { background-color: #007bff; color: white; }
+        .genre-filter .active {
+            background-color: #007bff;
+            color: white;
+        }
+        .genre-badge.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- 네비게이션 바 -->
+<div th:replace="nav :: nav"></div>
+<div style="height: 20px"></div>
+<div class="container">
+    <!-- 검색 및 정렬 폼 -->
+    <div class="search-container d-flex justify-content-between">
+        <form th:action="@{/movies}" method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="검색어를 입력하세요" aria-label="검색어를 입력하세요" aria-describedby="button-addon2" name="search">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" style="width: 100%" id="button-addon2">검색</button>
+                </div>
+            </div>
+        </form>
+        <div class="d-flex">
+            <div class="dropdown mr-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                    정렬하기
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/movies?sort=createdAt">등록순</a>
+                    <a class="dropdown-item" href="/movies?sort=date">최신순</a>
+                    <a class="dropdown-item" href="/movies?sort=rating">평점순</a>
+                </div>
+            </div>
+            <div>
+                <a class="btn btn-primary" th:href="@{/movies/new}">영화 등록하기</a>
+            </div>
+        </div>
+    </div>
+    <!-- 장르 필터링 -->
+    <div class="form-group">
+        <label>장르</label>
+        <div id="genreList" class="d-flex flex-wrap">
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="">모두</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="액션">액션</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="코미디">코미디</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="드라마">드라마</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="SF">SF</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="로맨스">로맨스</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="청춘">청춘</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="고어">고어</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="스릴러">스릴러</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="공포">공포</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="애니메이션">애니메이션</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="범죄">범죄</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="판타지">판타지</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="가족">가족</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="모험">모험</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="전쟁">전쟁</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="음악">음악</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="다큐멘터리">다큐멘터리</div>
+            <div class="badge badge-secondary m-1 genre-badge" data-genre="기타">기타</div>
+        </div>
+    </div>
+    <!-- 영화 목록 테이블 -->
+    <div class="table-container">
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th style="width: 40%;">영화 제목</th>
+                <th style="width: 10%;">감독</th>
+                <th style="width: 5%;">평점</th>
+                <th style="width: 15%;">개봉 일자</th>
+                <th style="width: 10%;">작성자</th>
+                <th style="width: 20%;">등록 일자</th>
+                <th style="width: 1%"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="movie, row : ${movies}">
+                <td>
+                    <a th:href="@{/movies/{movieId}/comments(movieId=${movie.id})}" th:text="${movie.title}" style="color: #007bff;"></a>
+                    <span th:each="genre : ${#strings.arraySplit(movie.genre, ',')}"
+                          class="tag"
+                          th:style="'min-width:' + (${#strings.length(genre.trim())} * 10) + '%'"
+                          th:text="'#' + ${genre.trim()}">
+          </span>
+                </td>
+                <td th:text="${movie.director}"></td>
+                <td th:text="${movie.rating}"></td>
+                <td th:text="${#dates.format(movie.date, 'yyyy-MM-dd')}"></td>
+                <td th:text="${movie.userid}"></td>
+                <td th:text="${#dates.format(movie.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td>
+                    <!-- 영화 삭제 -->
+                    <form th:action="@{/movies/{movieId}/delete(movieId=${movie.id})}"
+                          method="post"
+                          th:if="${movie.userid == session.loggedInUser?.userid}"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">X</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>
 

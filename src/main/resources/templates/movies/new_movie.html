@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>New Movie</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- JavaScript -->
+    <!-- 로그인 확인 및 리디렉션을 위한 JavaScript -->
     <script type="text/javascript" th:if="${session['loggedInUser'] == null}">
         window.addEventListener('DOMContentLoaded', function() {
             var confirmLogin = confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?");
@@ -16,6 +18,47 @@
             }
         });
     </script>
+    <!-- 장르 선택 및 폼 제출을 처리하는 스크립트 -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var maxGenres = 4;
+
+            // 장르 배지 클릭 이벤트
+            $('.genre-badge').click(function() {
+                var genre = $(this).data('genre');
+                addGenreToSelectedList(genre);
+            });
+
+            // 선택한 장르 목록에 장르를 추가하는 함수
+            function addGenreToSelectedList(genre) {
+                var selectedGenresCount = $('#selectedGenres').find('.badge').length;
+                if (selectedGenresCount < maxGenres && $('#selectedGenres').find('.badge[data-genre="' + genre + '"]').length === 0) {
+                    $('#selectedGenres').append('<div class="badge badge-secondary m-1" data-genre="' + genre + '">' + genre + '<span class="ml-2" style="cursor: pointer;" onclick="removeGenre(this)">X</span></div>');
+                    $('.genre-badge[data-genre="' + genre + '"]').addClass('active');
+                }
+            }
+
+            // 폼 제출 이벤트
+            $('form').submit(function(event) {
+                var selectedGenres = $('#selectedGenres').find('.badge').map(function() {
+                    return $(this).data('genre');
+                }).get();
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'selectedGenres',
+                    value: selectedGenres.join(',')
+                }).appendTo($(this));
+            });
+
+            // 선택한 장르를 목록에서 제거하는 함수
+            window.removeGenre = function(element) {
+                var genre = $(element).parent().data('genre');
+                $(element).parent().remove();
+                $('.genre-badge[data-genre="' + genre + '"]').removeClass('active');
+            }
+        });
+    </script>
+    <!-- 장르 배지에 대한 커스텀 CSS -->
     <style>
         .genre-badge {
             cursor: pointer;
@@ -34,24 +77,31 @@
 
 </head>
 <body>
+<!-- 네비게이션 바 -->
 <div th:replace="nav :: nav"></div>
 <div style="height: 20px"></div>
 <div class="container">
+    <!-- 뒤로가기 버튼 -->
     <div class="my-3">
         <div class="d-flex justify-content-end">
             <a class="btn btn-secondary" th:href="@{/movies}">BACK</a>
         </div>
     </div>
+    <!-- 에러 메시지 표시 -->
     <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <!-- 새 영화 등록 폼 -->
     <form th:action="@{/movies/new}" th:object="${movie}" method="post">
+        <!-- 영화 제목 입력 -->
         <div class="form-group">
             <label>영화 제목</label>
             <input type="text" th:field="*{title}" class="form-control" required/>
         </div>
+        <!-- 감독 입력 -->
         <div class="form-group">
             <label>감독</label>
             <input type="text" th:field="*{director}" class="form-control" required/>
         </div>
+        <!-- 장르 선택 -->
         <div class="form-group">
             <label>장르</label>
             <div id="genreList" class="d-flex flex-wrap">
@@ -75,55 +125,20 @@
                 <div class="badge badge-secondary m-1 genre-badge" data-genre="기타">기타</div>
             </div>
         </div>
-
+        <!-- 선택한 장르 표시 -->
         <div class="form-group">
             <label>선택한 장르</label>
             <div id="selectedGenres" class="d-flex flex-wrap"></div>
         </div>
+        <!-- 개봉 일자 입력 -->
         <div class="form-group">
             <label>개봉 일자</label>
             <input type="date" th:field="*{date}" class="form-control" required/>
         </div>
         <input type="hidden" id="selectedGenresInput" name="selectedGenres" />
-
+        <!-- 제출 버튼 -->
         <button type="submit" class="btn btn-primary">영화 등록</button>
     </form>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        var maxGenres = 4; // 최대 선택 가능한 장르 수
-        $('.genre-badge').click(function() {
-            var genre = $(this).data('genre');
-            addGenreToSelectedList(genre);
-        });
-
-        function addGenreToSelectedList(genre) {
-            var selectedGenresCount = $('#selectedGenres').find('.badge').length;
-            if (selectedGenresCount < maxGenres && $('#selectedGenres').find('.badge[data-genre="' + genre + '"]').length === 0) {
-                $('#selectedGenres').append('<div class="badge badge-secondary m-1" data-genre="' + genre + '">' + genre + '<span class="ml-2" style="cursor: pointer;" onclick="removeGenre(this)">X</span></div>');
-                $('.genre-badge[data-genre="' + genre + '"]').addClass('active'); // 선택한 장르에 active 클래스 추가
-            }
-        }
-
-        $('form').submit(function(event) {
-            var selectedGenres = $('#selectedGenres').find('.badge').map(function() {
-                return $(this).data('genre');
-            }).get();
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'selectedGenres',
-                value: selectedGenres.join(',')
-            }).appendTo($(this));
-        });
-
-        // 선택된 장르 삭제 함수
-        window.removeGenre = function(element) {
-            var genre = $(element).parent().data('genre');
-            $(element).parent().remove();
-            $('.genre-badge[data-genre="' + genre + '"]').removeClass('active'); // 선택한 장르에서 active 클래스 제거
-        }
-    });
-</script>
 </body>
 </html>

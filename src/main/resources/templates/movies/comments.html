@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${movie.title + ' - Movie Comments'}">Movie Comments</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery, Popper.js, Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- 로그인 확인 및 리디렉션을 위한 JavaScript -->
     <script type="text/javascript" th:if="${session['loggedInUser'] == null}">
         window.addEventListener('DOMContentLoaded', function() {
             var confirmLogin = confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?");
@@ -16,12 +20,49 @@
             }
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            // 영화 삭제 버튼 클릭 이벤트 처리
+            $('.btn-danger').click(function(event) {
+                event.preventDefault();
+                var result = confirm("정말로 삭제하시겠습니까?");
+                if (result) {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <!-- 좋아요 버튼을 위한 AJAX -->
+    <script>
+        $(document).ready(function() {
+            $(".likeForm").submit(function(event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    success: function(response) {
+                        var likeCountCell = form.closest("tr").find(".likeCount");
+                        likeCountCell.text(parseInt(likeCountCell.text()) + 1);
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            alert("이미 추천한 댓글입니다.");
+                        } else {
+                            console.error(xhr.responseText);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
+<!-- 네비게이션 바 -->
 <div th:replace="nav :: nav"></div>
 <div style="height: 20px"></div>
-
 <div class="container">
+    <!-- 영화 제목 -->
     <h1 class="mt-5" th:text="${movie.title}"></h1>
     <div class="my-3">
         <div class="d-flex justify-content-end">
@@ -29,6 +70,7 @@
         </div>
     </div>
     <div class="mb-5">
+        <!-- 댓글 작성 폼 -->
         <form th:action="@{'/movies/' + ${movie.id} + '/comments'}" method="post">
             <div class="form-group">
                 <label>평점 (1점 ~ 10점)</label>
@@ -44,16 +86,18 @@
     <div>
         <h2>COMMENTS</h2>
         <div class="my-3">
+            <!-- 정렬 옵션 -->
             <div class="btn-group" role="group" aria-label="Sort Options">
                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="sortDropdown">
                     정렬
                 </button>
                 <div class="dropdown-menu" aria-labelledby="sortDropdown">
                     <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='date')}">등록순</a>
-                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='score')}">별점순</a>
+                    <a class="dropdown-item" th:href="@{/movies/{movieId}/comments(movieId=${movie.id}, sort='score')}">평점순</a>
                 </div>
             </div>
         </div>
+        <!-- 댓글 테이블 -->
         <table class="table">
             <thead class="thead-dark">
             <tr>
@@ -61,12 +105,13 @@
                 <th style="width: 5%;">평점</th>
                 <th style="width: 10%;">작성자</th>
                 <th style="width: 25%;">등록 일자</th>
-                <th style="width: 2%;"></th>
+                <th style="width: 1%;"></th>
                 <th style="width: 4%;">추천</th>
                 <th style="width: 1%;"></th>
             </tr>
             </thead>
             <tbody>
+            <!-- 댓글 반복 출력 -->
             <tr th:each="comment : ${comments}">
                 <td th:text="${comment.content}"></td>
                 <td th:text="${comment.score}"></td>
@@ -74,11 +119,13 @@
                 <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td class="likeCount" th:text="${comment.likes}"></td>
                 <td>
+                    <!-- 좋아요 버튼 폼 -->
                     <form th:action="@{'/movies/' + ${movie.id} + '/comments/' + ${comment.id} + '/like'}" method="post" class="likeForm">
                         <button type="submit" class="btn btn-primary btn-sm likeBtn">UP</button>
                     </form>
                 </td>
                 <td>
+                    <!-- 댓글 삭제 버튼 폼 (작성자에게만 보임) -->
                     <form th:action="@{'/movies/' + ${movie.id} + '/comments/delete?commentId=' + ${comment.id}}" method="post" th:if="${comment.userid == session.loggedInUser?.userid}" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">X</button>
                     </form>
@@ -88,31 +135,5 @@
         </table>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $(".likeForm").submit(function(event) {
-            event.preventDefault();
-            var form = $(this);
-            $.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                success: function(response) {
-                    var likeCountCell = form.closest("tr").find(".likeCount");
-                    likeCountCell.text(parseInt(likeCountCell.text()) + 1);
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 400) {
-                        alert("이미 추천한 댓글입니다.");
-                    } else {
-                        console.error(xhr.responseText);
-                    }
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>
