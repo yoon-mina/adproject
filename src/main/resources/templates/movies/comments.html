@@ -56,17 +56,37 @@
             });
         });
     </script>
+    <!-- 영화 정보 사이트 이동 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const movieLinks = document.querySelectorAll('.movie-link');
+            movieLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    const movieTitle = this.getAttribute('data-title');
+                    const url = 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=' + encodeURIComponent(movieTitle);
+                    window.location.href = url;
+                });
+            });
+        });
+    </script>
+
 </head>
 <body>
 <!-- 네비게이션 바 -->
 <div th:replace="nav :: nav"></div>
 <div style="height: 20px"></div>
 <div class="container">
-    <!-- 영화 제목 -->
-    <h1 class="mt-5" th:text="${movie.title}"></h1>
+    <!-- 영화 제목과 BACK 버튼 -->
     <div class="my-3">
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="mt-5" th:text="${movie.title}"></h1>
             <a class="btn btn-secondary" th:href="@{/movies}">BACK</a>
+        </div>
+    </div>
+    <!-- 영화 정보 버튼 -->
+    <div class="my-3">
+        <div class="d-flex justify-content-between">
+            <a class="list-group-item list-group-item-action movie-link" th:attr="data-title=${movie.title}">영화 정보</a>
         </div>
     </div>
     <div class="mb-5">
