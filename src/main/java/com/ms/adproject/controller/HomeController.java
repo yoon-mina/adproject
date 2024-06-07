@@ -1,5 +1,4 @@
 package com.ms.adproject.controller;
-
 import com.ms.adproject.entity.Movie;
 import com.ms.adproject.repository.MovieRepository;
 import org.springframework.stereotype.Controller;
@@ -16,6 +15,7 @@ public class HomeController {
         this.movieRepository = movieRepository;
     }
 
+    // 홈 페이지 표시
     @GetMapping("/")
     public String home(Model model) {
         List<Movie> movies = movieRepository.findAllByOrderByDateDesc();

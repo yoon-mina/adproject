@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AuthController {
@@ -19,11 +18,13 @@ public class AuthController {
         this.userRepository = userRepository;
     }
 
+    // 로그인 폼을 표시하는 메서드
     @GetMapping("/login")
     public String showLoginForm() {
         return "user/login";
     }
 
+    // 로그인 처리를 담당하는 메서드
     @PostMapping("/login")
     public String login(@RequestParam String userid, @RequestParam String password, Model model, HttpSession session) {
         User user = userRepository.findByUserid(userid);
@@ -36,6 +37,7 @@ public class AuthController {
         }
     }
 
+    // 로그아웃 처리를 담당하는 메서드
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();

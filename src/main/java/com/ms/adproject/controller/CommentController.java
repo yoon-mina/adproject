@@ -11,11 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.sql.Timestamp;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class CommentController {
@@ -28,6 +25,7 @@ public class CommentController {
         this.movieRepository = movieRepository;
     }
 
+    // 영화의 평균 평점 업데이트
     private void updateMovieRating(Long movieId) {
         List<Comment> comments = commentRepository.findByMovieId(movieId);
         double totalScore = 0;
@@ -46,6 +44,7 @@ public class CommentController {
     }
 
 
+    // 특정 영화의 댓글 목록 조회
     @GetMapping("/movies/{movieId}/comments")
     public String getComments(@PathVariable Long movieId, Model model, @RequestParam(name = "sort", required = false) String sort) {
         List<Comment> comments;
@@ -62,6 +61,7 @@ public class CommentController {
         return "movies/comments";
     }
 
+    // 댓글 추가
     @PostMapping("/movies/{movieId}/comments")
     public String addComment(@PathVariable Long movieId, Comment comment, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
@@ -82,6 +82,7 @@ public class CommentController {
         return "redirect:/movies/" + movieId + "/comments";
     }
 
+    // 댓글 삭제
     @PostMapping("/movies/{movieId}/comments/delete")
     public String deleteComment(@RequestParam(name = "commentId") Long commentId, @PathVariable Long movieId) {
         commentRepository.deleteById(commentId);
@@ -89,6 +90,7 @@ public class CommentController {
         return "redirect:/movies/" + movieId + "/comments";
     }
 
+    // 댓글 추천
     @PostMapping("/movies/{movieId}/comments/{commentId}/like")
     public ResponseEntity<String> likeComment(@PathVariable Long movieId, @PathVariable Long commentId, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");

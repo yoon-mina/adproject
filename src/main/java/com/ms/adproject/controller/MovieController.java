@@ -1,5 +1,4 @@
 package com.ms.adproject.controller;
-
 import com.ms.adproject.entity.Movie;
 import com.ms.adproject.entity.User;
 import com.ms.adproject.repository.MovieRepository;
@@ -11,9 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.sql.Timestamp;
-import java.util.List;
 
 @Controller
 public class MovieController {
@@ -24,6 +21,7 @@ public class MovieController {
         this.movieRepository = movieRepository;
     }
 
+    // 영화 목록 가져오기
     @GetMapping("/movies")
     public String getMovies(Model model,
                             @RequestParam(name = "sort", required = false) String sort,
@@ -34,17 +32,12 @@ public class MovieController {
         Page<Movie> moviePage;
 
         if (sort != null) {
-            switch (sort) {
-                case "date":
-                    pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
-                    break;
-                case "createdAt":
-                    pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "createdAt"));
-                    break;
-                case "rating":
-                    pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "rating"));
-                    break;
-            }
+            pageable = switch (sort) {
+                case "date" -> PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
+                case "createdAt" -> PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "createdAt"));
+                case "rating" -> PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "rating"));
+                default -> pageable;
+            };
         }
 
         if (search != null && !search.isEmpty()) {
@@ -70,12 +63,14 @@ public class MovieController {
         return "movies/movies";
     }
 
+    // 영화 등록 폼 보여주기
     @GetMapping("/movies/new")
     public String showMovieForm(Model model) {
         model.addAttribute("movie", new Movie());
         return "movies/new_movie";
     }
 
+    // 영화 추가
     @PostMapping("/movies/new")
     public String addNewMovie(@ModelAttribute Movie movie, @RequestParam(name = "selectedGenres") String selectedGenres, HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
@@ -87,15 +82,13 @@ public class MovieController {
         movie.setUserid(loggedInUser.getUserid());
         movie.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         movie.setRating(0);
-
-        // 사용자가 선택한 장르들을 movie 객체에 설정합니다.
         movie.setGenre(selectedGenres);
-
         movieRepository.save(movie);
         return "redirect:/movies";
     }
 
 
+    // 영화 삭제
     @PostMapping("/movies/{movieId}/delete")
     public String deleteMovie(@PathVariable Long movieId, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
