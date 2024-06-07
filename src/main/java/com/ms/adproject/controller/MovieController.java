@@ -8,6 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -22,30 +25,48 @@ public class MovieController {
     }
 
     @GetMapping("/movies")
-    public String getMovies(Model model, @RequestParam(name = "sort", required = false) String sort,
-                            @RequestParam(name = "search", required = false) String search) {
-        List<Movie> movies;
+    public String getMovies(Model model,
+                            @RequestParam(name = "sort", required = false) String sort,
+                            @RequestParam(name = "search", required = false) String search,
+                            @RequestParam(name = "page", defaultValue = "0") int page,
+                            @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
+        Page<Movie> moviePage;
+
         if (sort != null) {
             switch (sort) {
                 case "date":
-                    movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+                    pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
                     break;
                 case "createdAt":
-                    movies = movieRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt"));
+                    pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "createdAt"));
                     break;
                 case "rating":
-                    movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "rating"));
-                    break;
-                default:
-                    movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+                    pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "rating"));
                     break;
             }
-        } else if (search != null && !search.isEmpty()) {
-            movies = movieRepository.searchMoviesAndComments(search);
-        } else {
-            movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
         }
-        model.addAttribute("movies", movies);
+
+        if (search != null && !search.isEmpty()) {
+            moviePage = movieRepository.searchMoviesAndComments(search, pageable);
+        } else {
+            moviePage = movieRepository.findAll(pageable);
+        }
+
+        int totalPages = moviePage.getTotalPages();
+        int currentPage = page;
+        int currentGroup = (int) Math.floor(currentPage / 10);
+        int totalGroups = (int) Math.ceil((double) totalPages / 10);
+        int startPage = currentGroup * 10;
+        int endPage = Math.min(startPage + 9, totalPages - 1);
+
+        model.addAttribute("movies", moviePage.getContent());
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("currentGroup", currentGroup);
+        model.addAttribute("totalGroups", totalGroups);
         return "movies/movies";
     }
 

@@ -171,7 +171,7 @@
             <tr>
                 <th style="width: 40%;">영화 제목</th>
                 <th style="width: 10%;">감독</th>
-                <th style="width: 5%;">평점</th>
+                <th style="width: 6%;">평점</th>
                 <th style="width: 15%;">개봉 일자</th>
                 <th style="width: 10%;">작성자</th>
                 <th style="width: 20%;">등록 일자</th>
@@ -210,6 +210,40 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 페이지네이션 -->
+    <div class="d-flex justify-content-center">
+        <nav th:if="${totalPages > 1}">
+            <ul class="pagination">
+                <!-- 이전 페이지로 이동하는 링크 -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage - 1}, size=${param.size != null ? param.size : 10}, sort=${param.sort}, search=${param.search})}">이전</a>
+                </li>
+
+                <!-- 이전 10 페이지로 이동하는 링크 -->
+                <li class="page-item" th:if="${currentPage >= 10}">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage - 10}, size=${param.size != null ? param.size : 10}, sort=${param.sort}, search=${param.search})}">&laquo;</a>
+                </li>
+
+                <!-- 페이지 번호를 보여주는 링크 -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}" th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/movies(page=${i}, size=${param.size != null ? param.size : 10}, sort=${param.sort}, search=${param.search})}" th:text="${i + 1}"></a>
+                </li>
+
+                <!-- 다음 10 페이지로 이동하는 링크 -->
+                <li class="page-item" th:if="${currentPage < totalPages - 10}">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage + 10}, size=${param.size != null ? param.size : 10}, sort=${param.sort}, search=${param.search})}">&raquo;</a>
+                </li>
+
+                <!-- 다음 페이지로 이동하는 링크 -->
+                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage + 1}, size=${param.size != null ? param.size : 10}, sort=${param.sort}, search=${param.search})}">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
 </div>
 </body>
 </html>
